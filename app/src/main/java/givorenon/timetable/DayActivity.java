@@ -1,5 +1,7 @@
 package givorenon.timetable;
 
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,11 +13,32 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DayActivity extends AppCompatActivity {
+public class DayActivity extends AppCompatActivity
+        implements AddTicketDialogFragment.DialogListener{
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        refreshActivity();
+    }
 
     Calendar calendar;
     DataBase dataBase;
     ArrayList<Ticket> dailyTickets;
+
+    private void refreshActivity() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+
+        String dateString = dateFormat.format(calendar.getTime());
+        String dayString = dayFormat.format(calendar.getTime());
+
+        ((TextView) findViewById(R.id.date)).setText(dateString);
+        ((TextView) findViewById(R.id.dayOfWeek)).setText(dayString);
+
+        dataBase = DataBase.getInstance();
+        dailyTickets = dataBase.getDailyTickets(getApplicationContext(), dateString);
+        ((ListView) findViewById(R.id.dailyTickets)).setAdapter(new MyAdapter(this, dailyTickets));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,36 +52,30 @@ public class DayActivity extends AppCompatActivity {
 
         calendar = Calendar.getInstance();
         calendar.set(year, month, day);
+    }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        String dateString = dateFormat.format(calendar.getTime());
-        String dayString = dayFormat.format(calendar.getTime());
+        refreshActivity();
+    }
 
-        ((TextView) findViewById(R.id.date)).setText(dateString);
-        ((TextView) findViewById(R.id.dayOfWeek)).setText(dayString);
-
-        dataBase = DataBase.getInstance();
-        dailyTickets = dataBase.getDailyTickets(getApplicationContext());
-        ((ListView) findViewById(R.id.dailyTickets)).setAdapter(new MyAdapter(this, dailyTickets));
+    public void addTicket(View view) {
+        AddTicketDialogFragment fragment = new AddTicketDialogFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        fragment.show(ft, "dialog");
     }
 
     public void nextDay(View view) {
         calendar.add(Calendar.DATE, 1);
-        Intent intent = new Intent(DayActivity.this, DayActivity.class);
-        intent.putExtra("year", calendar.get(Calendar.YEAR));
-        intent.putExtra("month", calendar.get(Calendar.MONTH));
-        intent.putExtra("day", calendar.get(Calendar.DAY_OF_MONTH));
-        startActivity(intent);
+
+        refreshActivity();
     }
 
     public void prevDay(View view) {
         calendar.add(Calendar.DATE, -1);
-        Intent intent = new Intent(DayActivity.this, DayActivity.class);
-        intent.putExtra("year", calendar.get(Calendar.YEAR));
-        intent.putExtra("month", calendar.get(Calendar.MONTH));
-        intent.putExtra("day", calendar.get(Calendar.DAY_OF_MONTH));
-        startActivity(intent);
+
+        refreshActivity(                                                                                                        );
     }
 }

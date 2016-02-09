@@ -5,7 +5,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Ticket extends RealmObject {
     @PrimaryKey
-    private long id;
+    private String id;
     private String startDate;
     private String finishDate;
     private String startTime;
@@ -13,17 +13,18 @@ public class Ticket extends RealmObject {
     private String text;
     private Boolean starred;
 
-    private static long lastId = 0;
+    public Ticket() {
 
-    Ticket(String _startDate, String _finishDate, String _startTime, String _finishTime, String _text, Boolean _starred) {
-        Ticket.lastId += 1;
-        id = Ticket.lastId;
+    }
+
+    public Ticket(String _startDate, String _finishDate, String _startTime, String _finishTime, String _text, Boolean _starred) {
         startDate = _startDate;
         finishDate = _finishDate;
         startTime = _startTime;
         finishTime = _finishTime;
         text = _text;
         starred = _starred;
+        id = startDate + startTime + finishDate + finishTime + text;
     }
 
     public String getStartDate() {
@@ -72,5 +73,13 @@ public class Ticket extends RealmObject {
 
     public void setStarred(Boolean starred) {
         this.starred = starred;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
