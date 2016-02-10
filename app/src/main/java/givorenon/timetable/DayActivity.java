@@ -12,6 +12,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DayActivity extends AppCompatActivity
         implements AddTicketDialogFragment.DialogListener{
@@ -37,6 +39,7 @@ public class DayActivity extends AppCompatActivity
 
         dataBase = DataBase.getInstance();
         dailyTickets = dataBase.getDailyTickets(getApplicationContext(), dateString);
+        Collections.sort(dailyTickets, new TicketComparator());
         ((ListView) findViewById(R.id.dailyTickets)).setAdapter(new MyAdapter(this, dailyTickets));
     }
 

@@ -3,7 +3,7 @@ package givorenon.timetable;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Ticket extends RealmObject {
+public class Ticket extends RealmObject{
     @PrimaryKey
     private String id;
     private String startDate;
